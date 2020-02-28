@@ -18,6 +18,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.util.AntPathMatcher;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +62,14 @@ public class ApplicationSecurityConfiguration extends WebSecurityConfigurerAdapt
                 .antMatchers("/", "/index", "/css/*", "/js/*").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .httpBasic();
+                //.httpBasic(); // removing this when using from login rather than http basic
+                .formLogin()
+                .loginPage("/login").permitAll()
+                .and()
+                .logout().invalidateHttpSession(true)
+                .clearAuthentication(true)
+                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                .logoutSuccessUrl("/logout-success").permitAll();
     }
 
 }
